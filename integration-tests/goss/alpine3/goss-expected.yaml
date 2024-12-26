@@ -13,7 +13,7 @@ package:
   apache2:
     installed: true
     versions:
-    - 2.4.46-r1
+    - 2.4.59-r0
   foobar:
     installed: false
   vim-tiny:
@@ -148,6 +148,7 @@ mount:
     - rw
     source: tmpfs
     filesystem: tmpfs
+    timeout: 1000
 http:
   http://google.com:
     status: 301

@@ -18,8 +18,8 @@ for x in /etc/passwd /tmp/goss/foobar;do
   goss a "${args[@]}" file $x
 done
 
-[[ $OS == "centos7" ]] && package="httpd" || package="apache2"
-[[ $OS == "centos7" ]] && user="apache" || user="www-data"
+[[ $OS == "centos7" || $OS == "rockylinux9" ]] && package="httpd" || package="apache2"
+[[ $OS == "centos7" || $OS == "rockylinux9" ]] && user="apache" || user="www-data"
 goss a "${args[@]}" package $package foobar vim-tiny
 
 goss a "${args[@]}" addr --timeout 1s httpbin:80 httpbin:22
@@ -63,6 +63,7 @@ goss a "${args[@]}" mount /dev
 sed -i '/- seclabel/d' $SCRIPT_DIR/${OS}/goss-generated-$ARCH.yaml
 sed -i '/- size=/d' $SCRIPT_DIR/${OS}/goss-generated-$ARCH.yaml
 sed -i '/- mode=/d' $SCRIPT_DIR/${OS}/goss-generated-$ARCH.yaml
+sed -i '/- inode64/d' $SCRIPT_DIR/${OS}/goss-generated-$ARCH.yaml
 
 goss a "${args[@]}" http https://www.google.com
 

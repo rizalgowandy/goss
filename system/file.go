@@ -25,7 +25,9 @@ type File interface {
 	Size() (int, error)
 	Filetype() (string, error)
 	Owner() (string, error)
+	Uid() (int, error)
 	Group() (string, error)
+	Gid() (int, error)
 	LinkedTo() (string, error)
 	Md5() (string, error)
 	Sha256() (string, error)
@@ -36,14 +38,13 @@ type hashFuncType string
 
 const (
 	md5Hash    hashFuncType = "md5"
-	sha256Hash              = "sha256"
-	sha512Hash              = "sha512"
+	sha256Hash hashFuncType = "sha256"
+	sha512Hash hashFuncType = "sha512"
 )
 
 type DefFile struct {
 	path     string
 	realPath string
-	fi       os.FileInfo
 	loaded   bool
 	err      error
 }
@@ -165,7 +166,7 @@ func realPath(path string) (string, error) {
 	if f == "~" {
 		usr, err = user.Current()
 	} else {
-		usr, err = user.Lookup(f[1:len(f)])
+		usr, err = user.Lookup(f[1:])
 	}
 	if err != nil {
 		return "", err

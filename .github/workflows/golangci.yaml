@@ -1,0 +1,67 @@
+name: Golang ci
+on:
+  # don't build any branch other than master (and prs) when git pushed
+  pull_request: {}
+  push:
+    branches:
+      - master
+      - "/^v\\d+\\.\\d+(\\.\\d+)?(-\\S*)?$/"
+    paths-ignore:
+      - "**/*.md"
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: v1.59
+
+  coverage:
+    needs: [lint]
+    name: coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Unit tests and coverage
+        run: make cov
+
+  integration-test:
+    needs: [coverage]
+    name: Integration tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Integration tests
+        shell: bash
+        run: |
+          os_name="$(go env GOOS)"
+          if [[ "${os_name}" == "darwin" || "${os_name}" == "windows" ]]; then
+            make "test-int-${os_name}-all"
+          else
+            # linux runs all tests;
+            make test-int-all
+          fi

@@ -23,7 +23,9 @@ file:
     exists: true
     mode: '0644'
     owner: root
+    uid: 0
     group: root
+    gid: 0
     filetype: file
     contents:
     - root
@@ -169,6 +171,7 @@ kernel-param:
 mount:
   "/dev":
     exists: true
+    timeout: 1000
     opts:
     - rw
     - nosuid
@@ -201,7 +204,9 @@ http:
     request-headers:
       - "Foo: bar"
     headers: ["Content-Type: application/json"]
-    body: ['"Foo": "bar"']
+    body:
+      - '"Foo": "bar"'
+      - '/"User-Agent": "goss/v?[0-9]+.[0-9]+.[0-9]+"/'
   http://httpbin/headers?host:
     status: 200
     timeout: 60000
@@ -288,4 +293,3 @@ gossfile:
     skip: true
   bypath:
     file: "goss-dummy.yaml"
-
